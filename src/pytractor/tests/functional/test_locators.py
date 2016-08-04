@@ -13,35 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from unittest import TestCase
-
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
-from .testdriver import TestDriver
-from .testserver import SimpleWebServerProcess
+from .webdriver_test_base import WebDriverTestBase
 
-
-class LocatorTestCase(TestCase):
+class LocatorTestCase(WebDriverTestBase):
     """Test case class for testing locators."""
-
-    @classmethod
-    def setUpClass(cls):
-        cls.driver = TestDriver(
-            'http://localhost:{}/'.format(SimpleWebServerProcess.PORT),
-            'body'
-        )
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.driver.quit()
-
+    use_firefox = True
 
 class ByBindingLocatorTest(LocatorTestCase):
     """Tests the locators of the WebDriverMixin that deal with bindings."""
 
     def setUp(self):
-        self.driver.get('index.html#/form')
+        self.driver.get(self.url + 'index.html#/form')
 
 
     def test_find_element_by_binding_raises_error_if_no_element_matches(self):
@@ -80,7 +65,7 @@ class ByBindingLocatorTest(LocatorTestCase):
 
 class ByModelLocatorTest(LocatorTestCase):
     def setUp(self):
-        self.driver.get('index.html#/form')
+        self.driver.get(self.url + 'index.html#/form')
 
     def test_find_element_by_model_finds_element_by_text_input_model(self):
         username = self.driver.find_element_by_model('username')
@@ -158,7 +143,7 @@ class ByModelLocatorTest(LocatorTestCase):
 
 class ByRepeaterTestCase(LocatorTestCase):
     def setUp(self):
-        self.driver.get('index.html#/repeater')
+        self.driver.get(self.url + 'index.html#/repeater')
 
     def test_find_elements_by_repeater_returns_correct_element(self):
         element = self.driver.find_elements_by_repeater('allinfo in days')

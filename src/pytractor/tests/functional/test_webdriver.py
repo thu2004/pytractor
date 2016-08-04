@@ -16,40 +16,25 @@
 Simple tests for Firefox and Chrome drivers. We just see if the drivers can
 be instantiated and run a simple test.
 """
-import unittest
 
+from .webdriver_test_base import WebDriverTestBase
 from selenium.webdriver.remote.webelement import WebElement
 
-# pylint: disable=no-name-in-module
-from pytractor.webdriver import Firefox, Chrome
-# pylint: enable=no-name-in-module
-
-from . import SimpleWebServerProcess
-
-
-class WebDriverTestBase(object):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.driver = cls.driver_class(
-            'http://localhost:{}/'.format(SimpleWebServerProcess.PORT),
-            'body'
-        )
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.driver.quit()
+class FirefoxWebDriverTest(WebDriverTestBase):
+    use_firefox = True
 
     def test_find_element_by_binding(self):
-        self.driver.get('index.html#/form')
+        self.driver.get(self.url + 'index.html#/form')
         element = self.driver.find_element_by_binding('greeting')
         self.assertIsInstance(element, WebElement)
         self.assertEqual(element.text, 'Hiya')
 
 
-class FirefoxWebDriverTest(WebDriverTestBase, unittest.TestCase):
-    driver_class = Firefox
+class ChromeWebDriverTest(WebDriverTestBase):
+    use_firefox = False
 
-
-class ChromeWebDriverTest(WebDriverTestBase, unittest.TestCase):
-    driver_class = Chrome
+    def test_find_element_by_binding(self):
+        self.driver.get(self.url + 'index.html#/form')
+        element = self.driver.find_element_by_binding('greeting')
+        self.assertIsInstance(element, WebElement)
+        self.assertEqual(element.text, 'Hiya')

@@ -17,28 +17,16 @@ from unittest import TestCase
 
 from pytractor.exceptions import AngularNotFoundException
 
-from .testdriver import TestDriver
-from .testserver import SimpleWebServerProcess
+from .webdriver_test_base import WebDriverTestBase
 
-
-class WebDriverBaseTest(TestCase):
+class WebDriverBaseTest(WebDriverTestBase):
     """Tests the WebDriverMixin."""
-
-    @classmethod
-    def setUpClass(cls):
-        cls.driver = TestDriver(
-            'http://localhost:{}/'.format(SimpleWebServerProcess.PORT),
-            'body'
-        )
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.driver.quit()
+    use_firefox = True
 
     def test_get_no_angular(self):
         with self.assertRaises(AngularNotFoundException):
-            self.driver.get('index-no-angular.html')
+            self.driver.get(self.url + 'index-no-angular.html')
 
     def test_get_no_angular_does_not_fail_if_ignore_synchronization_set(self):
         self.driver.ignore_synchronization = True
-        self.driver.get('index-no-angular.html')
+        self.driver.get(self.url + 'index-no-angular.html')

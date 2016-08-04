@@ -15,28 +15,14 @@
 Contains tests that wait for angular's processing to finish.
 """
 
-from unittest import TestCase
+from .webdriver_test_base import WebDriverTestBase
 
-from .testdriver import TestDriver
-from .testserver import SimpleWebServerProcess
-
-
-class AngularWaitTest(TestCase):
+class AngularWaitTest(WebDriverTestBase):
     """Test case class for testing waiting for angular."""
-
-    @classmethod
-    def setUpClass(cls):
-        cls.driver = TestDriver(
-            'http://localhost:{}/'.format(SimpleWebServerProcess.PORT),
-            'body'
-        )
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.driver.quit()
+    use_firefox = True
 
     def setUp(self):
-        self.driver.get('index.html#/async')
+        self.driver.get(self.url + 'index.html#/async')
 
     def test_waits_for_http_calls(self):
         status = self.driver.find_element_by_binding('slowHttpStatus')

@@ -22,6 +22,7 @@ import signal
 import http.server
 import socketserver
 import time
+import multiprocessing
 
 PORT = 8000
 
@@ -69,17 +70,13 @@ class SimpleWebServerProcess(object):
     HOST = 'localhost'
     PORT = 9999
     APP_DIR = 'testapp'
-    _pid = None
+    _process = None
 
     def run(self):
-        self._pid = os.fork()
-        if self._pid == 0:
-            self.start_server()
-        else:
-            logger.debug('Started webserver child as pid {} on'
-                         ' port {}'.format(self._pid, self.PORT))
-            # wait 5 seconds for server to start
-            time.sleep(5)
+        if not self._process:
+            self._process = multiprocessing.Process(target=self.start_server);
+            self._process.start()
+        time.sleep(1)
 
     def start_server(self):
         module_path = __file__
@@ -93,11 +90,8 @@ class SimpleWebServerProcess(object):
         httpd.serve_forever()
 
     def stop(self):
-        if self._pid != 0:
-            logger.debug('Sending SIGTERM to webserver child with'
-                         ' pid {}'.format(self._pid))
-            os.kill(self._pid, signal.SIGTERM)
-            os.waitpid(self._pid, 0)
+        if self._process:
+            self._process.terminate()
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
