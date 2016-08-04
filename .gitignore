@@ -7,3 +7,4 @@ dist/
 .project
 .pydevproject
 .settings
+src/pytractor/tests/functional/testapp/lib/angular/*
