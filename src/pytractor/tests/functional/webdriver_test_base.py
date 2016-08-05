@@ -18,6 +18,8 @@ be instantiated and run a simple test.
 """
 import unittest
 import os
+import platform
+
 from selenium.webdriver.remote.webelement import WebElement
 
 # pylint: disable=no-name-in-module
@@ -31,6 +33,8 @@ from . import SimpleWebServerProcess
 
 class WebDriverTestBase(unittest.TestCase):
     WIN_CHROME_DIR = "bin/windows"
+    OSX_CHROME_DIR = "bin/osx"
+    LINUX_CHROME_DIR = "bin/linux"
 
     @classmethod
     def setUpClass(cls):
@@ -40,10 +44,18 @@ class WebDriverTestBase(unittest.TestCase):
             profile.set_preference("network.proxy.type", 0)
             cls.driver = Firefox(firefox_profile=profile)
         else:
+            system_name = platform.system()
             module_path = __file__
-            chrome_path = os.path.join(os.path.dirname(module_path), cls.WIN_CHROME_DIR)
+            if system_name == "Darwin":
+                chrome_path = os.path.join(os.path.dirname(module_path), cls.OSX_CHROME_DIR)
+                chrome_driver = os.path.join(chrome_path, "chromedriver")
+            elif system_name == "Windows":
+                chrome_path = os.path.join(os.path.dirname(module_path), cls.WIN_CHROME_DIR)
+                chrome_driver = os.path.join(chrome_path, "chromedriver.exe")
+            else:
+                chrome_path = os.path.join(os.path.dirname(module_path), cls.LINUX_CHROME_DIR)
+                chrome_driver = os.path.join(chrome_path, "chromedriver")
 
-            chrome_driver = os.path.join(chrome_path, "chromedriver.exe")
             cls.driver = Chrome(executable_path=chrome_driver)
 
     @classmethod

@@ -7,4 +7,9 @@ dist/
 .project
 .pydevproject
 .settings
+
+# angular working lib
 src/pytractor/tests/functional/testapp/lib/angular/*
+
+# nose output dir
+output/
